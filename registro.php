@@ -21,17 +21,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    $pass_hash = password_hash($pass,PASSWORD_DEFAULT);
+    $pass_hash = password_hash($pass, PASSWORD_BCRYPT);
 
     $sql = "INSERT INTO usuarios (nombre,email,contrasena) VALUES (?,?,?)";
     $consulta = $conexion->prepare($sql);
-    $consulta->bind_param("sss",$nombre,$email,$pass);
-    
+    $consulta->bind_param("sss", $nombre, $email, $pass);
 
-    if($consulta->execute()){
+
+    if ($consulta->execute()) {
         echo "<script>alert('Registro Exitoso');</script>";
         header("Location: login.php");
-    }else{
+    } else {
         echo "error al registrar " . $conexion->error;
     }
 
@@ -58,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <input type="password" name="password" class="form-control" placeholder="Contraseña">
                 </div>
                 <button class="btn btn-primary w-100" type="submit">Registrarse</button>
+                <a href="login.php" class="btn btn-secondary w-100 mt-3">Volver</a>
         </form>
     </div>
 </body>

@@ -2,9 +2,52 @@
 
 include 'conexion.php';
 
+session_start();
 
-$sql = "SELECT * FROM usuarios ";
-$resultado = $conexion->query($sql);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+  $email = trim($_POST["email"]) ;
+  $pass = trim($_POST["pass"]);
+
+  if (empty($email) || empty($pass)) {
+    echo "<div class='alert alert-danger' role='alert'>
+               Debes ingresar todos los valores 
+          </div>";
+  }
+
+  $sql = "SELECT * FROM usuarios WHERE email = ?";
+  $consulta = $conexion->prepare($sql);
+  $consulta->bind_param("s",$email);
+  $consulta->execute();
+  $resultado = $consulta->get_result();
+
+  if($resultado->num_rows !== 0){
+
+    $usuario = $resultado->fetch_assoc();
+
+    if(password_verify($pass,$usuario['contrasena'])){
+
+      $_SESSION['usuario'] = $usuario['nombre'];
+      $_SESSION['id'] = $usuario['id'];
+      header("Location: dashboard.php");
+      exit;
+      
+    }else{
+      echo "<div class='alert alert-danger' role='alert'>
+                Contraseña incorrecta.
+            </div>";
+    }
+
+  }else{
+    echo "<div class='alert alert-danger' role='alert'>
+              Correo no esta registrado.
+          </div>";
+  }
+
+  $consulta->close();
+
+
+}
 
 ?>
 
@@ -19,18 +62,15 @@ $resultado = $conexion->query($sql);
 </head>
 
 <body>
-  <?php
-
-  ?>
 
   <div class="container col-3 mt-5 ">
-    <form>
+    <form method="POST" action="">
       <h1 class="mb-3">Inicio sesión</h1>
       <div class="mb-3">
-        <input type="text" class="form-control" id="" placeholder="Usuario">
+        <input type="text" class="form-control" name="email" placeholder="Email">
       </div>
       <div class="mb-3">
-        <input type="password" class="form-control" placeholder="Constraseña">
+        <input type="password" class="form-control" name="pass" placeholder="Constraseña">
       </div>
       <div class="d-grid gap-2">
         <button type="submit" class="btn btn-primary justify-content-center ">Iniciar Sesión</button>
