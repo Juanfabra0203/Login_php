@@ -6,8 +6,8 @@ session_start();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-  $email = trim($_POST["email"]) ;
-  $pass = trim($_POST["pass"]);
+  $email = $_POST["email"] ;
+  $pass = $_POST["pass"];
 
   if (empty($email) || empty($pass)) {
     echo "<div class='alert alert-danger' role='alert'>
@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   $consulta->execute();
   $resultado = $consulta->get_result();
 
-  if($resultado->num_rows !== 0){
+  if($resultado->num_rows === 1){
 
     $usuario = $resultado->fetch_assoc();
 
@@ -39,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
   }else{
+
     echo "<div class='alert alert-danger' role='alert'>
               Correo no esta registrado.
           </div>";

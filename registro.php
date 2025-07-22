@@ -14,18 +14,18 @@ include "conexion.php";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nombre = trim($_POST["nombre"]);
     $email = trim($_POST["email"]);
-    $pass = $_POST["password"];
+    $pass = $_POST["pass"];
 
     if (empty($nombre) || empty($email) || empty($pass)) {
         echo "Llena todos los campos";
         exit;
     }
 
-    $pass_hash = password_hash($pass, PASSWORD_BCRYPT);
+    $pass_hash = password_hash($pass, PASSWORD_DEFAULT);
 
     $sql = "INSERT INTO usuarios (nombre,email,contrasena) VALUES (?,?,?)";
     $consulta = $conexion->prepare($sql);
-    $consulta->bind_param("sss", $nombre, $email, $pass);
+    $consulta->bind_param("sss", $nombre, $email, $pass_hash);
 
 
     if ($consulta->execute()) {
@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <input type="email" name="email" class="form-control" placeholder="Email">
                 </div>
                 <div class="mb-3">
-                    <input type="password" name="password" class="form-control" placeholder="Contraseña">
+                    <input type="password" name="pass" class="form-control" placeholder="Contraseña">
                 </div>
                 <button class="btn btn-primary w-100" type="submit">Registrarse</button>
                 <a href="login.php" class="btn btn-secondary w-100 mt-3">Volver</a>
